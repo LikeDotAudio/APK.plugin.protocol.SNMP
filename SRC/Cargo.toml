@@ -1,11 +1,11 @@
 [package]
-workspace = "../../APK:plugins:Build/SRC"
+workspace = "../../../discovery/SRC"
 name = "apkaudio-snmp"
 version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-apkaudio-contracts = { path = "../../APK:BareMetal/SRC/contracts/rust" }
+apkaudio-contracts = { path = "../../../BareMetal/SRC/contracts/rust" }
 
 pyo3 = { version = "0.21.2", optional = true }
 
