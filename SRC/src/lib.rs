@@ -2,31 +2,23 @@
 // MIT Licence. Free, for everyone, for ever. Full text in LICENSE at the root.
 //! `apkaudio-snmp` — SNMP helpers.
 //!
-//! **This crate is a PyO3 extension shim.** Its real implementation lives in the
-//! sibling module(s) below and is gated behind the `python` feature, which is NOT
-//! enabled by default. A default `cargo build` therefore produces an empty library
-//! — that is expected, not missing code. Build with `--features python` to compile
-//! the implementation.
+//! **An in-memory OID tree for Python, around a pure OID grammar.** `agent`'s
+//! `parse_oid` / `format_oid` compile in the default feature set, so `cargo test`
+//! checks them and `self_test` asks them questions; only the `SnmpAgent` pyclass
+//! and its `#[pymodule]` sit behind the `python` feature (off by default).
 //!
-//! (The `cargo new` template `add()` that used to sit here has been removed: a
-//! function asserting 2 + 2 as the crate's public entry point misrepresented the
-//! crate as unimplemented.)
-//! TWO lints are allowed crate-wide, and neither is fixable here:
-//! `unsafe_op_in_unsafe_fn` fires inside pyo3's `#[pymethods]` expansion, and
-//! `non_snake_case` covers `oaMIBCache_rs`, whose spelling is the key
-//! `Core/CORE:engine:RUST/lib.rs` registers into `sys.modules` for Python callers.
-//! The four-lint blanket this replaced also hid `dead_code`, `unused_imports`
-//! and an unused parameter.
-#![allow(unsafe_op_in_unsafe_fn, non_snake_case)]
+//! `mib_cache` (`oaMIBCache_rs`) was removed under LOOSE-snmp-mib-cache: it was a
+//! `#[pymodule]` that registered nothing, mounted by oaRustCore as
+//! `snmp_mib_cache` and imported by no Python in the tree.
+//!
+//! ONE lint is allowed crate-wide and it is not this crate's code:
+//! `unsafe_op_in_unsafe_fn` fires inside pyo3's `#[pymethods]` expansion.
+#![cfg_attr(feature = "python", allow(unsafe_op_in_unsafe_fn))]
 
-#[cfg(feature = "python")]
 pub mod agent;
 
-#[cfg(feature = "python")]
-pub mod mib_cache;
-
 /// This crate's own self test — what it can prove about itself with nothing
-/// plugged in. Reached from the bus through `outgoing/selftest_run`; see
-/// `apkaudio_contracts::self_test` for the two inputs and the withdrawal the
-/// first of them performs. PLAN-459.01.
+/// plugged in. Run by `cargo test`; nothing answers `outgoing/selftest_run`
+/// for it on the bus since PLAN-3316.01 (see `self_test.rs`). The report shape
+/// is `apkaudio_contracts::self_test`'s. PLAN-459.01.
 pub mod self_test;

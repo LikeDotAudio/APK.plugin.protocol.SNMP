@@ -10,10 +10,12 @@
 //! WHY IT IS A PLAIN FUNCTION AND NOT A BUS LOOP
 //!
 //! Eleven of the twenty-nine crates in this workspace link no MQTT client, so
-//! whatever runs their self test is not them — for the in-process protocol
-//! crates it is the orchestrator. A function over the crate's own machinery is
-//! runnable by that supervisor, by `cargo test`, and by a person at a terminal,
-//! and none of the three needs a broker to be up. PLAN-459.01.
+//! whatever runs their self test is not them. For this library nothing on the
+//! bus does: since PLAN-3316.01 the orchestrator links none of the six libraries
+//! to answer for them (`NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/main.rs`,
+//! "NO BUS SELF-TEST LISTENER HERE"), so `cargo test` — or a person at a
+//! terminal calling `self_test_json` — is the runner, and neither needs a
+//! broker to be up. PLAN-459.01.
 //!
 //! WHAT A CHECK HERE MAY DO
 //!
@@ -34,9 +36,8 @@ pub const MODULE: &str = "snmp";
 /// This crate's `config.ini`, baked in at compile time.
 ///
 /// Read from the binary rather than from disk because a self test must not
-/// depend on the working directory it was launched from — the orchestrator
-/// starts these agents in-process from `/app`, and a check that passed at a
-/// terminal and failed under the supervisor would be worse than no check.
+/// depend on the working directory it was launched from — a check that passed
+/// at one working directory and failed at another would be worse than no check.
 const CONFIG_INI: &str = include_str!("../config.ini");
 
 /// Everything this crate can prove about itself at `depth`.
@@ -59,7 +60,28 @@ pub fn self_test(depth: Depth) -> Report {
         config_declares_module(),
     ));
 
+    // The OID grammar every `SnmpAgent` method goes through: one key per OID,
+    // and a malformed arc refused rather than dropped (LOOSE-snmp-agent).
+    report.record(Check::from_result(
+        "an_oid_with_a_bad_arc_is_refused_not_merged",
+        Depth::Own,
+        "`1.3.6` parses, `1.3.x.6` is refused instead of becoming `1.3.6`",
+        oid_grammar(),
+    ));
+
     report
+}
+
+fn oid_grammar() -> Result<(), String> {
+    use crate::agent::{format_oid, parse_oid};
+    let good = parse_oid(".1.3.6.1.2.1")?;
+    if format_oid(&good) != ".1.3.6.1.2.1" {
+        return Err(format!("`.1.3.6.1.2.1` came back as {}", format_oid(&good)));
+    }
+    match parse_oid("1.3.x.6") {
+        Err(_) => Ok(()),
+        Ok(arcs) => Err(format!("`1.3.x.6` was accepted as {}", format_oid(&arcs))),
+    }
 }
 
 /// The four self-test topics, built. An error here is a module name that
@@ -78,8 +100,9 @@ fn landing_spots() -> Result<(), String> {
 
 /// Does `config.ini` open with `[snmp]`?
 ///
-/// The drift this catches is quiet and total: `orchestrator/src/mqtt.rs` walks
-/// this directory, parses each `config.ini` and publishes it retained under the
+/// The drift this catches is quiet and total: `publish_protocol_configs` in
+/// `NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/mqtt.rs` walks the
+/// module folders, parses each `config.ini` and publishes it retained under the
 /// section's own name. A section renamed without its crate puts this agent's
 /// configuration on the bus under a name nothing reads, and every display goes
 /// on showing the last good copy.
