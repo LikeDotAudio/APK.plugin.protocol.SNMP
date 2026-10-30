@@ -14,7 +14,7 @@ Checked 2026-10-30: 8 passed with and without `--features python`.
 
 | Destination | How |
 |---|---|
-| `node-baremetal:local` (container `Node-BareMetal`) | `NODE.BareMetal/Docker/Dockerfile` copies `LIBRARY/LIB.SNMP/SRC`; linked with `python` into oaRustCore, a dependency of `apkaudio-orchestrator`. `config.ini` is staged to `/app/APK:DOCKERS/APK:BareMetal/LIB.SNMP/config.ini`. |
+| `node-baremetal:local` (container `Node-BareMetal`) | `NODE.BareMetal/Docker/Dockerfile` copies `LIBRARY/LIB.SNMP/SRC`; compiled as a member of the plugin workspace; oaRustCore no longer links it. `config.ini` is staged to `/app/APK:DOCKERS/APK:BareMetal/LIB.SNMP/config.ini`. |
 | plugin builder image (`DISCOVERY.Engine/Docker/Dockerfile`) | compiled as a workspace member; no plugin binary uses it |
 | GitHub | `https://github.com/LikeDotAudio/APK.plugin.protocol.SNMP.git`, a monorepo submodule; pushed by `.apk.scripts/deploy_all.py` |
 

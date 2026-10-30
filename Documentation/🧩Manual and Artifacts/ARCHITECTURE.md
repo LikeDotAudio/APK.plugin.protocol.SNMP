@@ -4,7 +4,7 @@
 
 ## Using it
 
-From Python, through oaRustCore (`python` feature):
+From Python — only once a caller re-mounts it in oaRustCore with the `python` feature; today it is not mounted: oaRustCore dropped it, because no Python under `PODS/` imported it (`NODE.BareMetal/SRC/Core/CORE:engine:RUST/lib.rs`, the "NOT MOUNTED" comment), and no Cargo.toml in the tree enables the `python` feature. A Python caller re-adds the dependency with `features = ["python"]` and its `add_submodule!` in the same commit as the import:
 
 ```python
 import oaRustCore

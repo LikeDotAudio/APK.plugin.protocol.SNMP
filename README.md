@@ -5,8 +5,8 @@ SNMP helpers, as a Rust library: an in-memory OID tree (set, get, get-next) for 
 | | |
 |---|---|
 | **Recipe** | none — a library, not a container: it is linked into the binaries that use it |
-| **Source** | `SRC/` (this repository — https://github.com/LikeDotAudio/APK.plugin.protocol.SNMP.git) — crate `apkaudio-snmp` (feature `python` for oaRustCore) |
-| **Used by** | oaRustCore (`PODS/POD.THICK/NODE.BareMetal/SRC/Core/CORE:engine:RUST/lib.rs`), which mounts `snmp_agent` (`oaSNMPAgent_rs`); a member of the plugin workspace |
+| **Source** | `SRC/` (this repository — https://github.com/LikeDotAudio/APK.plugin.protocol.SNMP.git) — crate `apkaudio-snmp` (opt-in feature `python`; nothing enables it) |
+| **Used by** | no crate depends on it; oaRustCore no longer mounts `snmp_agent`. A member of the plugin workspace |
 | **Workspace** | `PODS/POD.THICK/DISCOVERY.Engine/SRC/Cargo.toml` (shared `target/` at the repository root) |
 | **Family / Category** | LIBRARY — protocol helper; no MQTT client, no socket, no port |
 

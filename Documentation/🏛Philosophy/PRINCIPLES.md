@@ -13,4 +13,4 @@ The principles `apkaudio-snmp` keeps, each pointed at the code that keeps it. Ec
 
 ## Where the code falls short
 
-- **A tree nobody fills.** oaRustCore mounts `snmp_agent` (`NODE.BareMetal/SRC/Core/CORE:engine:RUST/lib.rs`) but no Python in the tree imports it. The SNMP that talks to switches is `PODS/POD.THICK/PLUGINS/PLUGIN.SNMP`, which does not use this crate.
+- **A tree nobody fills.** The Python surface is not mounted: oaRustCore dropped it, because no Python under `PODS/` imported it (`NODE.BareMetal/SRC/Core/CORE:engine:RUST/lib.rs`, the "NOT MOUNTED" comment), and no Cargo.toml in the tree enables the `python` feature. A Python caller re-adds the dependency with `features = ["python"]` and its `add_submodule!` in the same commit as the import. The SNMP that talks to switches is `PODS/POD.THICK/PLUGINS/PLUGIN.SNMP`, which does not use this crate.
