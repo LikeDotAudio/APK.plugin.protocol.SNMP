@@ -14,7 +14,7 @@
 //! TWO lints are allowed crate-wide, and neither is fixable here:
 //! `unsafe_op_in_unsafe_fn` fires inside pyo3's `#[pymethods]` expansion, and
 //! `non_snake_case` covers `oaMIBCache_rs`, whose spelling is the key
-//! `Core/src/lib.rs` registers into `sys.modules` for Python callers.
+//! `Core/CORE:engine:RUST/lib.rs` registers into `sys.modules` for Python callers.
 //! The four-lint blanket this replaced also hid `dead_code`, `unused_imports`
 //! and an unused parameter.
 #![allow(unsafe_op_in_unsafe_fn, non_snake_case)]
