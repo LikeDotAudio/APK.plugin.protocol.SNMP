@@ -25,6 +25,11 @@ No live URL; on the bus, `APK.audio/System/Protocols/lib_snmp/config` (retained,
 - No CI runs the tests (the root `.github/workflows/ci.yml` verifies nothing, by design); the check is the one command above.
 - A running node picks up a change only after an operator rebuilds `Node-BareMetal`.
 
+## Delivered 2026-10-31: portable file names (no `:` `|` or case twins)
+
+- The monorepo now checks out on Windows and macOS: no tracked name holds `<>:"|?*`, a trailing dot or space, a device name or a case-only twin. Colon folders became dot folders (the POD.x convention).
+- References to the renamed folders updated (`Baremetal.Manager`, `ORCHESTRATOR.hunter.VISA`, `CORE.engine.RUST`). Docs/comments only, no behaviour change.
+
 ## Delivered from the 2026-10-30 audit
 
 - **One OID grammar for the tree** — new `SRC/src/oid.rs`: `Oid` (strict `parse`/`FromStr` with `OidError` naming the arc; `Display`/`dotted()`, `dotted_leading()`; `Ord` = SNMP arc order; `starts_with`, `strip_prefix`, `is_child_of`, `parent`, `child`, `longest_prefix` on arcs; `to_ber`/`from_ber` per X.690 §8.19 including multi-byte first sub-identifiers, which PLUGIN.TRENDNET's `read_oid` splits wrongly for `2.x`). `agent.rs` `parse_oid`/`format_oid` now delegate to it (same behaviour, 4 tests unchanged). 5 new tests + 1 doc test incl. the textbook BER vector; `cargo test -p apkaudio-snmp` 13 + 1 pass, `--features python` checks clean. PLUGIN.SNMP (`schema.rs` `is_child_of`/`best_section`/`oid_key`) and PLUGIN.TRENDNET (`snmp.rs` `oid_from_dotted`/`oid_to_dotted`/`encode_oid`/`read_oid`) adopting it: handoffs filed.
