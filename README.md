@@ -28,7 +28,7 @@ The empty `oaMIBCache_rs` module and the unread `host`/`port`/`version`/`communi
 
 ## On the bus
 
-No MQTT client. The orchestrator (`NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/mqtt.rs`) publishes `config.ini` retained at `APK.audio/System/Protocols/lib_snmp/config` (the one section with a `topic`, since NODE.BareMetal 5229192), with `/status` = `disabled` (its own `enabled = false`) and, on a broker the bench owns, `/host`.
+No MQTT client. The orchestrator (`NODE.BareMetal/SRC/Core/ORCHESTRATOR.hunter.VISA/src/mqtt.rs`) publishes `config.ini` retained at `APK.audio/System/Protocols/lib_snmp/config` (the one section with a `topic`, since NODE.BareMetal 5229192), with `/status` = `disabled` (its own `enabled = false`) and, on a broker the bench owns, `/host`.
 
 ## Build and test
 
