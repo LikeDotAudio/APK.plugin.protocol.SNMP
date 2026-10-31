@@ -18,7 +18,7 @@ Checked 2026-10-30: 13 passed + 1 doc test; `cargo check -p apkaudio-snmp --feat
 | plugin builder image (`DISCOVERY.Engine/Docker/Dockerfile`) | compiled as a workspace member; no plugin binary uses it |
 | GitHub | `https://github.com/LikeDotAudio/APK.plugin.protocol.SNMP.git`, a monorepo submodule; pushed by `.apk.scripts/deploy_all.py` |
 
-No live URL; on the bus, `APK.audio/System/Protocols/snmp/config` (retained).
+No live URL; on the bus, `APK.audio/System/Protocols/lib_snmp/config` (retained, `/status` = `disabled`).
 
 ## Not automated
 
@@ -32,3 +32,8 @@ No live URL; on the bus, `APK.audio/System/Protocols/snmp/config` (retained).
 - **Tests run per change as one command** — no workflow here (the root CI verifies nothing on purpose); the check is `cargo test -p apkaudio-snmp` in `DISCOVERY.Engine/SRC` (or `cargo test` in `SRC/`, standalone).
 - **Builds from its own repository** — `SRC/Cargo.toml` names no workspace, sets `edition = "2024"` and takes `apkaudio-contracts` from APK.plugin.SDK by tag `sdk-v0.5` (the `.apk.scripts/plugin_standalone.py` shape); `.gitignore` keeps the standalone `Cargo.lock` out. The DISCOVERY.Engine workspace reaches it through the link `SRC/members/LIB.SNMP` (landed with this change). Verified: a copy of `SRC/` alone runs `cargo test --offline` green against `sdk-v0.5` (13 tests + 1 doc test); the check is now `cargo test` in `SRC/`.
 - **Released `0.2.0`, tag `snmp-v0.2.0`** — `SRC/Cargo.toml` bumped 0.1.0 → 0.2.0 (the `Oid` grammar), annotated tag `snmp-v0.2.0` published (owner-authorised 2026-10-31) so PLUGIN.SNMP and PLUGIN.TRENDNET can take `apkaudio-snmp` by tag; engine lock refresh handed to the coordinator. Verified: `git archive HEAD` of `SRC/` builds and tests alone against `sdk-v0.6`.
+
+Since the audit:
+
+- **SDK tag `sdk-v0.7`** (88b72ec) — `SRC/Cargo.toml` takes `apkaudio-contracts` by `tag = "sdk-v0.7"`. Verified 2026-10-31: `git archive HEAD`, extracted alone, `cd SRC && cargo test` 13 passed + 1 doc test.
+- **Bus module `lib_snmp`, not `snmp`** (436a7cd) — `config.ini` `[lib_snmp]` with `topic = APK.audio/System/Protocols/lib_snmp`, `self_test.rs` `MODULE = "lib_snmp"`: the old `[snmp]` put this disabled library's retained status on the live PLUGIN.SNMP's root and the engine census failed (`MODULE 'snmp'` twice). The orchestrator finds the section by its `topic` since NODE.BareMetal 5229192. Verified: `cargo test` 13 + 1 passed.

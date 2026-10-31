@@ -22,13 +22,13 @@ Was `APK:BareMetal/PLUGINS/PLUGIN:protocol:SNMP`.
 | `SRC/src/oid.rs` | `Oid`: `parse`/`FromStr` (strict; `OidError` names the arc), `Display`/`dotted()` (`1.3.6.1`), `dotted_leading()` (`.1.3.6.1`), `Ord` = SNMP arc order, `starts_with`/`strip_prefix`/`is_child_of`/`parent`/`child`/`longest_prefix` on arcs, `to_ber`/`from_ber` (X.690 §8.19, incl. multi-byte first sub-identifier) |
 | `SRC/src/agent.rs` | `parse_oid(text)` → `Result<Vec<u32>, String>` and `format_oid(arcs)` (always compiled); `SnmpAgent` (feature `python`) — `update_oid(oid, value)`, `get_oid(oid)`, `get_next(oid)` → `{oid, value}`, `clear()`; keys are `Vec<u32>`, so a walk is in SNMP arc order (`.9` before `.10`); a malformed arc raises `ValueError` |
 | `SRC/src/self_test.rs` | the self test, module name `snmp` — landing spots, the `config.ini` section, and the OID grammar refusing a bad arc |
-| `SRC/config.ini` | `[snmp]` — `enabled = false` (read by the protocol census; nothing runs this library), `topic` |
+| `SRC/config.ini` | `[lib_snmp]` — `enabled = false` (read by the protocol census; nothing runs this library), `topic` |
 
 The empty `oaMIBCache_rs` module and the unread `host`/`port`/`version`/`community` keys were removed on 2026-10-30 (LOOSE-snmp-mib-cache). The SNMP that talks to real switches is `PODS/POD.THICK/PLUGINS/PLUGIN.SNMP`.
 
 ## On the bus
 
-No MQTT client. The orchestrator (`NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/mqtt.rs`) publishes `config.ini` retained at `APK.audio/System/Protocols/snmp/config`, with `/status` = `online` and, on a broker the bench owns, `/host`.
+No MQTT client. The orchestrator (`NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/mqtt.rs`) publishes `config.ini` retained at `APK.audio/System/Protocols/lib_snmp/config` (the one section with a `topic`, since NODE.BareMetal 5229192), with `/status` = `disabled` (its own `enabled = false`) and, on a broker the bench owns, `/host`.
 
 ## Build and test
 

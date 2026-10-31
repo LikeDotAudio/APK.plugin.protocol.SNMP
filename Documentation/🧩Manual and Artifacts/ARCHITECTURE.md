@@ -36,9 +36,9 @@ Also `apkaudio_snmp::agent::{parse_oid, format_oid}` (string-error wrappers) and
 | `SRC/src/lib.rs` | `pub mod agent` (always), `pub mod self_test`; one pyo3 lint allowed under `python` |
 | `SRC/src/oid.rs` | `Oid`, `OidError`: text ⇄ arcs ⇄ BER, prefix tests, `Ord` |
 | `SRC/src/agent.rs` | `parse_oid` (strict: every arc a decimal `0..=4294967295`, `""`/`"."` = root), `format_oid` (always a leading dot); `SnmpAgent` with an `Arc<Mutex<BTreeMap<Vec<u32>, String>>>`; `oasnmpagent_rs` |
-| `SRC/src/self_test.rs` | `MODULE = "snmp"`; landing spots, `[snmp]` section, the OID grammar |
-| `SRC/config.ini` | `[snmp]` — `enabled = false` (no process runs this library), `topic` |
+| `SRC/src/self_test.rs` | `MODULE = "lib_snmp"` (not `snmp`: PLUGIN.SNMP is the live `snmp` module); landing spots, `[lib_snmp]` section, the OID grammar |
+| `SRC/config.ini` | `[lib_snmp]` — `enabled = false` (no process runs this library), `topic` |
 
 ## Data flow
 
-Every `SnmpAgent` method parses its OID text through `parse_oid` first; a refusal is a Python `ValueError` before the lock is taken. `config.ini` is staged by the NODE.BareMetal image build and published retained at `APK.audio/System/Protocols/snmp/config` by the orchestrator (`publish_protocol_configs`).
+Every `SnmpAgent` method parses its OID text through `parse_oid` first; a refusal is a Python `ValueError` before the lock is taken. `config.ini` is staged by the NODE.BareMetal image build and published retained at `APK.audio/System/Protocols/lib_snmp/config` by the orchestrator (`publish_protocol_configs`).
