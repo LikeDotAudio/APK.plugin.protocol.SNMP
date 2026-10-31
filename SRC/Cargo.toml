@@ -1,11 +1,14 @@
 [package]
-workspace = "../../../DISCOVERY.Engine/SRC"
 name = "apkaudio-snmp"
 version = "0.1.0"
-edition.workspace = true
+edition = "2024"
 
 [dependencies]
-apkaudio-contracts = { path = "../../../NODE.BareMetal/SRC/contracts/rust" }
+# From APK.plugin.SDK by tag, so a clone of this repository builds alone
+# (.apk.scripts/plugin_standalone.py). In the monorepo the DISCOVERY.Engine
+# workspace's [patch] — and, run from this folder, the generated, untracked
+# .cargo/config.toml — point it back at the local contracts.
+apkaudio-contracts = { git = "https://github.com/LikeDotAudio/APK.plugin.SDK", tag = "sdk-v0.5" }
 
 pyo3 = { version = "0.21.2", optional = true }
 

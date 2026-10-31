@@ -18,7 +18,7 @@ An OID grammar (`parse_oid`, `format_oid`) and an in-memory OID tree exposed to 
 ## Scorecard
 | Category | Score (0–3) | Finding |
 |---|---|---|
-| Coupling & Cohesion | 1 | built only inside another repo's workspace; contracts by relative path |
+| Coupling & Cohesion | 3 | builds from its own repository; contracts by SDK tag; engine membership through a `members/` link |
 | Boundary Integrity | 3 | pyo3 behind a feature; the grammar is plain Rust with typed errors |
 | Duplication Control | 2 | `Oid` (parse, format, arc order, prefix, BER) is now the shared grammar; PLUGIN.SNMP and PLUGIN.TRENDNET still carry their own until they adopt it (handoffs filed) |
 | Testing & Contracts | 3 | 9 grammar tests (incl. the BER textbook vector) + 4 self tests + 1 doc test, one command |
@@ -26,7 +26,6 @@ An OID grammar (`parse_oid`, `format_oid`) and an in-memory OID tree exposed to 
 Score key: 3 meets the standard · 2 minor gaps · 1 significant gaps · 0 absent / violated.
 
 ## Findings
-1. **Not buildable alone (open — waiting on DISCOVERY.Engine).** `SRC/Cargo.toml:2` (`workspace = …DISCOVERY.Engine/SRC`, `edition.workspace = true`) and `:8` (contracts by path). The standalone manifest is ready and verified but must land with the engine's member link.
 2. **Good: the grammar refuses bad input.** `SRC/src/oid.rs` `Oid::parse` returns `Err` naming a malformed arc instead of dropping it, and orders by arcs so `.9` sorts before `.10`.
 3. **Good: dead code removed honestly.** The empty `oaMIBCache_rs` pymodule and the unread `host`/`port`/`version`/`community` keys are gone (`SRC/src/lib.rs` header, `SRC/config.ini`).
 4. **Two OID vocabularies until adoption.** PLUGIN.SNMP keeps OIDs as dotted strings and compares them textually (`PLUGIN.SNMP/SRC/src/schema.rs:324`); PLUGIN.TRENDNET has its own text and BER codec. This crate's side (`Oid`) is delivered; adoption is handed off.
