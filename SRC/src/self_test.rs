@@ -31,7 +31,9 @@ use apkaudio_contracts::self_test::{Check, Depth, Report};
 /// `APK.audio/System/Protocols/{proto}/…`, and the name its report is filed
 /// under. It must match the section in `config.ini`, which is what
 /// `config_section_still_names_this_module` below asserts.
-pub const MODULE: &str = "snmp";
+// `lib_snmp`, not `snmp`: PLUGIN.SNMP is the live `snmp` module on the bus, and
+// this library's disabled status must not land on its topic (check_selftest_census).
+pub const MODULE: &str = "lib_snmp";
 
 /// This crate's `config.ini`, baked in at compile time.
 ///
@@ -98,7 +100,7 @@ fn landing_spots() -> Result<(), String> {
     Ok(())
 }
 
-/// Does `config.ini` open with `[snmp]`?
+/// Does `config.ini` open with `[lib_snmp]`?
 ///
 /// The drift this catches is quiet and total: `publish_protocol_configs` in
 /// `NODE.BareMetal/SRC/Core/ORCHESTRATOR:hunter:VISA/src/mqtt.rs` walks the
