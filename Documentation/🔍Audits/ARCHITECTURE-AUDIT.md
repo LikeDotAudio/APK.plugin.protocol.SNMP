@@ -22,7 +22,7 @@ An OID grammar (`parse_oid`, `format_oid`) and an in-memory OID tree exposed to 
 | Boundary Integrity | 3 | pyo3 behind a feature; the grammar is plain Rust with typed errors |
 | Duplication Control | 2 | `Oid` (parse, format, arc order, prefix, BER) is now the shared grammar; PLUGIN.SNMP and PLUGIN.TRENDNET still carry their own until they adopt it (handoffs filed) |
 | Testing & Contracts | 3 | 9 grammar tests (incl. the BER textbook vector) + 4 self tests + 1 doc test, one command |
-| Change management | 2 | `enabled = false` until a process runs it; `0.1.0`, no tags (needs owner) |
+| Change management | 3 | Released and tagged: `snmp-v0.2.0` (version 0.2.0); consumers pin the tag |
 Score key: 3 meets the standard · 2 minor gaps · 1 significant gaps · 0 absent / violated.
 
 ## Findings
