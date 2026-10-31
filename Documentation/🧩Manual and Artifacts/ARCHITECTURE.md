@@ -15,16 +15,29 @@ agent.get_next(".1.3.6.1.2.1.1")                    # {'oid': '.1.3.6.1.2.1.1.5.
 agent.get_oid("1.3.x.6")                            # ValueError: OID "1.3.x.6": arc "x" is not a decimal number
 ```
 
-From Rust: `apkaudio_snmp::agent::{parse_oid, format_oid}` and `apkaudio_snmp::self_test`.
+From Rust — the shared OID grammar (since 2026-10-30):
+
+```rust
+use apkaudio_snmp::{Oid, OidError};
+let oid: Oid = "1.3.6.1.2.1.1.1.0".parse()?;     // strict; Err(OidError) names the bad arc
+oid.to_string();          // "1.3.6.1.2.1.1.1.0"  (dotted_leading() → ".1.3.6.1.2.1.1.1.0")
+oid.starts_with(&table);  oid.strip_prefix(&column) /* index arcs */;  oid.is_child_of(&parent);
+oid.longest_prefix(&sections);   // the MIB node / section an instance files under
+let mut v = oids; v.sort();      // SNMP arc order (.9 before .10)
+oid.to_ber(); Oid::from_ber(body)?;   // X.690 §8.19 contents octets
+```
+
+Also `apkaudio_snmp::agent::{parse_oid, format_oid}` (string-error wrappers) and `apkaudio_snmp::self_test`.
 
 ## Inside
 
 | File | Role |
 |---|---|
 | `SRC/src/lib.rs` | `pub mod agent` (always), `pub mod self_test`; one pyo3 lint allowed under `python` |
+| `SRC/src/oid.rs` | `Oid`, `OidError`: text ⇄ arcs ⇄ BER, prefix tests, `Ord` |
 | `SRC/src/agent.rs` | `parse_oid` (strict: every arc a decimal `0..=4294967295`, `""`/`"."` = root), `format_oid` (always a leading dot); `SnmpAgent` with an `Arc<Mutex<BTreeMap<Vec<u32>, String>>>`; `oasnmpagent_rs` |
 | `SRC/src/self_test.rs` | `MODULE = "snmp"`; landing spots, `[snmp]` section, the OID grammar |
-| `SRC/config.ini` | `[snmp]` — `enabled`, `topic` |
+| `SRC/config.ini` | `[snmp]` — `enabled = false` (no process runs this library), `topic` |
 
 ## Data flow
 
