@@ -8,7 +8,7 @@ edition = "2024"
 # (.apk.scripts/plugin_standalone.py). In the monorepo the DISCOVERY.Engine
 # workspace's [patch] — and, run from this folder, the generated, untracked
 # .cargo/config.toml — point it back at the local contracts.
-apkaudio-contracts = { git = "https://github.com/LikeDotAudio/APK.plugin.SDK", tag = "sdk-v0.6" }
+apkaudio-contracts = { git = "https://github.com/LikeDotAudio/APK.plugin.SDK", tag = "sdk-v0.7" }
 
 pyo3 = { version = "0.21.2", optional = true }
 
