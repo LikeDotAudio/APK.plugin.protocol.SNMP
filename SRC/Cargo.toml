@@ -1,6 +1,6 @@
 [package]
 name = "apkaudio-snmp"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 
 [dependencies]
@@ -8,7 +8,7 @@ edition = "2024"
 # (.apk.scripts/plugin_standalone.py). In the monorepo the DISCOVERY.Engine
 # workspace's [patch] — and, run from this folder, the generated, untracked
 # .cargo/config.toml — point it back at the local contracts.
-apkaudio-contracts = { git = "https://github.com/LikeDotAudio/APK.plugin.SDK", tag = "sdk-v0.7" }
+apkaudio-contracts = { git = "https://github.com/LikeDotAudio/APK.plugin.SDK", tag = "sdk-v0.9" }
 
 pyo3 = { version = "0.21.2", optional = true }
 
