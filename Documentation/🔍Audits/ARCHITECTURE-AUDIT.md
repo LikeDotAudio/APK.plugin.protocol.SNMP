@@ -9,8 +9,8 @@ An OID grammar (`parse_oid`, `format_oid`) and an in-memory OID tree exposed to 
 ## Context map
 | Talks to | How (topic / endpoint / file / import) | Relationship |
 |---|---|---|
-| DISCOVERY.Engine workspace | `workspace = "../../../DISCOVERY.Engine/SRC"` (`SRC/Cargo.toml:2`) | Shared build by path |
-| contracts (NODE.BareMetal) | path dep `../../../NODE.BareMetal/SRC/contracts/rust` (`SRC/Cargo.toml:8`), for the self-test report | Conformist by path |
+| DISCOVERY.Engine workspace | member through the link `DISCOVERY.Engine/SRC/members/LIB.SNMP` (standalone since 2026-10-30) | Shared build (workspace host) |
+| APK.plugin.SDK `apkaudio-contracts` | Cargo git dependency, tag `sdk-v0.5` (`SRC/Cargo.toml`); patched to the local contracts inside the engine workspace | Conformist (self-test report shape), versioned |
 | Orchestrator / protocol census | `SRC/config.ini` published retained at `APK.audio/System/Protocols/snmp/config`; census reads `enabled` | Published Language (config only) |
 | PLUGIN.SNMP | none — it handles OIDs itself as strings (`PLUGINS/PLUGIN.SNMP/SRC/src/schema.rs:324` `is_child_of`, `parse.rs:271` `oid_tail`) | Separate Ways (overlapping concept) |
 | Consumers | none — README "Used by: no crate depends on it" | — |

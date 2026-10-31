@@ -7,7 +7,7 @@ SNMP helpers, as a Rust library: **the tree's one OID grammar** (`Oid` — stric
 | **Recipe** | none — a library, not a container: it is linked into the binaries that use it |
 | **Source** | `SRC/` (this repository — https://github.com/LikeDotAudio/APK.plugin.protocol.SNMP.git) — crate `apkaudio-snmp` (opt-in feature `python`; nothing enables it) |
 | **Used by** | adoption pending: PLUGIN.SNMP (`schema.rs` string prefix tests) and PLUGIN.TRENDNET (`snmp.rs` `oid_from_dotted`/`encode_oid`/`read_oid`) — handoffs filed 2026-10-30. oaRustCore no longer mounts `snmp_agent`. A member of the plugin workspace; `enabled = false` on the bus until a process runs it |
-| **Workspace** | `PODS/POD.THICK/DISCOVERY.Engine/SRC/Cargo.toml` (shared `target/` at the repository root) |
+| **Workspace** | none of its own — builds standalone (`cargo test` in `SRC/`, SDK by tag `sdk-v0.5`); the DISCOVERY.Engine workspace reaches it through the link `SRC/members/LIB.SNMP` |
 | **Family / Category** | LIBRARY — protocol helper; no MQTT client, no socket, no port |
 
 Was `APK:BareMetal/PLUGINS/PLUGIN:protocol:SNMP`.
