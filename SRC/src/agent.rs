@@ -77,27 +77,14 @@ impl SnmpAgent {
 /// OID text to arcs. Leading and trailing dots are optional (`.1.3.6.` and
 /// `1.3.6` are one key; `""` and `"."` are the root). Every arc between them
 /// must be a decimal number in SNMP's 32-bit range, or the OID is refused.
+/// The string-error form of [`crate::Oid::parse`], kept for the agent.
 pub fn parse_oid(oid: &str) -> Result<Vec<u32>, String> {
-    let body = oid.strip_prefix('.').unwrap_or(oid);
-    let body = body.strip_suffix('.').unwrap_or(body);
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    body.split('.')
-        .map(|arc| {
-            if arc.is_empty() || !arc.bytes().all(|b| b.is_ascii_digit()) {
-                return Err(format!("OID {oid:?}: arc {arc:?} is not a decimal number"));
-            }
-            arc.parse::<u32>()
-                .map_err(|_| format!("OID {oid:?}: arc {arc} is above 4294967295"))
-        })
-        .collect()
+    crate::Oid::parse(oid).map(crate::Oid::into_arcs).map_err(|e| e.to_string())
 }
 
-/// Arcs to OID text, always with the leading dot.
+/// Arcs to OID text, always with the leading dot ([`crate::Oid::dotted_leading`]).
 pub fn format_oid(oid: &[u32]) -> String {
-    let parts: Vec<String> = oid.iter().map(|n| n.to_string()).collect();
-    format!(".{}", parts.join("."))
+    crate::Oid::from(oid).dotted_leading()
 }
 
 #[cfg(feature = "python")]

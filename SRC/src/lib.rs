@@ -1,6 +1,7 @@
 // Part of the APK.audio project — http://APK.audio — made by Anthony Kuzub
 // MIT Licence. Free, for everyone, for ever. Full text in LICENSE at the root.
-//! `apkaudio-snmp` — SNMP helpers.
+//! `apkaudio-snmp` — SNMP helpers: the shared OID grammar ([`Oid`]) and a
+//! dormant in-memory agent tree for Python.
 //!
 //! **An in-memory OID tree for Python, around a pure OID grammar.** `agent`'s
 //! `parse_oid` / `format_oid` compile in the default feature set, so `cargo test`
@@ -16,6 +17,11 @@
 #![cfg_attr(feature = "python", allow(unsafe_op_in_unsafe_fn))]
 
 pub mod agent;
+
+/// The OID grammar — THE one for the tree: [`Oid`] parse/format, arc-order,
+/// prefix tests, BER. Plain Rust, default build.
+pub mod oid;
+pub use oid::{Oid, OidError};
 
 /// This crate's own self test — what it can prove about itself with nothing
 /// plugged in. Run by `cargo test`; nothing answers `outgoing/selftest_run`

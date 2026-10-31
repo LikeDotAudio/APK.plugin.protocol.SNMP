@@ -1,0 +1,32 @@
+# 🔍 Architecture audit — LIB.SNMP (2026-10-30)
+
+Audited against the APK.audio multi-repo architecture standard: coupling, boundaries, duplication, contracts.
+← [Audits](INDEX.md) · Improvements: [🛣Roadmap/IMPROVEMENTS.md](../%F0%9F%9B%A3Roadmap/IMPROVEMENTS.md)
+
+## Bounded context
+An OID grammar (`parse_oid`, `format_oid`) and an in-memory OID tree exposed to Python behind the `python` feature. Not an SNMP stack: no socket, no PDU. Rust library `apkaudio-snmp`, 3 files, 378 lines. Everything was read.
+
+## Context map
+| Talks to | How (topic / endpoint / file / import) | Relationship |
+|---|---|---|
+| DISCOVERY.Engine workspace | `workspace = "../../../DISCOVERY.Engine/SRC"` (`SRC/Cargo.toml:2`) | Shared build by path |
+| contracts (NODE.BareMetal) | path dep `../../../NODE.BareMetal/SRC/contracts/rust` (`SRC/Cargo.toml:8`), for the self-test report | Conformist by path |
+| Orchestrator / protocol census | `SRC/config.ini` published retained at `APK.audio/System/Protocols/snmp/config`; census reads `enabled` | Published Language (config only) |
+| PLUGIN.SNMP | none — it handles OIDs itself as strings (`PLUGINS/PLUGIN.SNMP/SRC/src/schema.rs:324` `is_child_of`, `parse.rs:271` `oid_tail`) | Separate Ways (overlapping concept) |
+| Consumers | none — README "Used by: no crate depends on it" | — |
+
+## Scorecard
+| Category | Score (0–3) | Finding |
+|---|---|---|
+| Coupling & Cohesion | 1 | built only inside another repo's workspace; contracts by relative path |
+| Boundary Integrity | 3 | pyo3 behind a feature; the grammar is plain Rust with typed errors |
+| Duplication Control | 2 | `Oid` (parse, format, arc order, prefix, BER) is now the shared grammar; PLUGIN.SNMP and PLUGIN.TRENDNET still carry their own until they adopt it (handoffs filed) |
+| Testing & Contracts | 3 | 9 grammar tests (incl. the BER textbook vector) + 4 self tests + 1 doc test, one command |
+| Change management | 2 | `enabled = false` until a process runs it; `0.1.0`, no tags (needs owner) |
+Score key: 3 meets the standard · 2 minor gaps · 1 significant gaps · 0 absent / violated.
+
+## Findings
+1. **Not buildable alone (open — waiting on DISCOVERY.Engine).** `SRC/Cargo.toml:2` (`workspace = …DISCOVERY.Engine/SRC`, `edition.workspace = true`) and `:8` (contracts by path). The standalone manifest is ready and verified but must land with the engine's member link.
+2. **Good: the grammar refuses bad input.** `SRC/src/oid.rs` `Oid::parse` returns `Err` naming a malformed arc instead of dropping it, and orders by arcs so `.9` sorts before `.10`.
+3. **Good: dead code removed honestly.** The empty `oaMIBCache_rs` pymodule and the unread `host`/`port`/`version`/`community` keys are gone (`SRC/src/lib.rs` header, `SRC/config.ini`).
+4. **Two OID vocabularies until adoption.** PLUGIN.SNMP keeps OIDs as dotted strings and compares them textually (`PLUGIN.SNMP/SRC/src/schema.rs:324`); PLUGIN.TRENDNET has its own text and BER codec. This crate's side (`Oid`) is delivered; adoption is handed off.
